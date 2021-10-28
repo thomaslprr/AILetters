@@ -42,6 +42,36 @@ dictionnaire = Dict('a' => 1,
             'z' => 26
             )
 			
+dictionnaireInverse = Dict(1 => 'a',
+			2 => 'b',
+			3 => 'c',
+			4 => 'd',
+			5 => 'e',
+			6 => 'f',
+			7 => 'g',
+			8 => 'h',
+			9 => 'i',
+			10 => 'j',
+			11 => 'k',
+			12 => 'l',
+			13 => 'm',
+			14 => 'n',
+			15 => 'o',
+			16 => 'p',
+			17 => 'q',
+			18 => 'r',
+			19 => 's',
+			20 => 't',
+			21 => 'u',
+			22 => 'v',
+			23 => 'w',
+			24 => 'x',
+			25 => 'y',
+			26 => 'z',
+			)
+			
+
+			
 M = zeros(Int, 26, 26)
 
 function estlettreFr(cara)
@@ -79,16 +109,83 @@ function couples(txt_url,matrice)
 			end	
 		end
 	end
-	println(matrice)
 	for i in 1:26
 		total = sum(matrice[i,:])
-		println(total);
 		for j in 1:26
 			P[i,j] = matrice[i,j]/total
 		end 
 	end	
+	for i in 1:26
+		tmp=0
+		for j in 1:26
+			P[i,j]=tmp+P[i,j]
+			tmp= P[i,j]
+		end
+	end
 	return P
 end
 
-#réaliser des tranches en fonction de la proba et tirer un nombre aleatoire 
-			
+T = zeros(Float64, 30)
+function moyenneTailleMot(txt_url,tableauMot)
+	cptTotal = 0
+	for line in eachline(txt_url)
+		mots = split(line," ")
+		for mot in mots
+			if(sizeof(mot)>0)
+				if haskey(dictionnaire,lowercase(mot[1])) 
+					tableauMot[length(mot)] = tableauMot[length(mot)]+1
+					cptTotal = cptTotal+1 
+				end
+			end		
+		end
+	end
+	
+	cml=0
+	for i in 1:30
+		tableauMot[i]=cml+(tableauMot[i]/cptTotal)
+		cml = tableauMot[i]
+	end
+	return tableauMot
+end
+
+function generationMot(probaLettre,probaMot)
+	lettre = dictionnaireInverse[rand((1:26))]
+	tirage = rand(Float64)
+	tailleMot = -1
+	intervalle=0 
+	for i in 1:30
+		if(tirage >=intervalle && tirage <= probaMot[i])
+			 tailleMot = i
+			 break
+		end
+		intervalle=probaMot[i]
+	end
+	chaine = ""*lettre
+	for i in 1:tailleMot 
+		lettre = lettreSuivante(probaLettre,lettre)
+		chaine = chaine*lettre
+	end
+	return chaine
+end
+
+function generationPhrase(probaLettre,probaMot)
+	tirage = rand((7:25))
+	phrase = ""
+	for i in 1:tirage 
+		phrase = phrase*" "*generationMot(probaLettre,probaMot)
+	end
+	return uppercase(phrase[2])*phrase[3:end]*"."
+	
+end
+
+function lettreSuivante(probaLettre,lettre)
+	tirage = rand(Float64)
+	indice = indiceLettre(dictionnaire,lettre)
+	intervalle=0  
+	for i in 1:26
+		if(tirage >=intervalle && tirage <= probaLettre[indice,i])
+			return dictionnaireInverse[i]
+		end
+		intervalle=probaLettre[indice,i]
+	end
+end			
