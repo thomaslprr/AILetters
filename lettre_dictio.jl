@@ -42,6 +42,37 @@ dictionnaire = Dict('a' => 1,
             'z' => 26
             )
 			
+#Défintiion d'un dicitionnaire inversé : chiffre vers lettre			
+dictionnaireInverse = Dict(1 => 'a',
+			2 => 'b',
+			3 => 'c',
+			4 => 'd',
+			5 => 'e',
+			6 => 'f',
+			7 => 'g',
+			8 => 'h',
+			9 => 'i',
+			10 => 'j',
+			11 => 'k',
+			12 => 'l',
+			13 => 'm',
+			14 => 'n',
+			15 => 'o',
+			16 => 'p',
+			17 => 'q',
+			18 => 'r',
+			19 => 's',
+			20 => 't',
+			21 => 'u',
+			22 => 'v',
+			23 => 'w',
+			24 => 'x',
+			25 => 'y',
+			26 => 'z',
+			)
+			
+			
+			
 D = Dict{String,Float64}()
 
 function estlettreFr(cara)
@@ -55,32 +86,35 @@ end
 
 function majcouple!(dict,av,ap)
 	if(estlettreFr(av) && estlettreFr(ap))
-		chaine = lowercase(string(av)*string(ap))
+		chaine = string(dictionnaireInverse[dictionnaire[lowercase(av)]])*string(dictionnaireInverse[dictionnaire[lowercase(ap)]])
 		if(haskey(dict,chaine))
 			dict[chaine]=dict[chaine]+1
 		else
 			dict[chaine]=1
 		end
+		base = dictionnaireInverse[dictionnaire[lowercase(av)]]*""
+		if(haskey(dict,base))
+			dict[base]=dict[base]+1
+		else
+			dict[base]=1
+		end
 	end
 end
 
 
-function proba(dict)
-	som=0
-	res = filter(tuple -> startswith(first(tuple), "a"), dict)
-	for (key, value) in res
-		println(key," ",value)
-		som=som+value
+function proba!(dict)
+	for i in 1:26
+		res = filter(tuple -> startswith(first(tuple), dictionnaireInverse[i]), dict)
+		total = res[""*dictionnaireInverse[i]]
+		delete!(dict,""*dictionnaireInverse[i])
+		delete!(res,""*dictionnaireInverse[i])
+		cml=0
+		for (key,value) in res
+				dict[key]=(dict[key]/total)+cml
+				cml = dict[key]
+		end
 	end
-	for (key, value) in res
-		dict[key]=value/som
-	end
-	for (key, value) in dict
-		println(key," ",value)
-	end
-			
-	
-	
+	return dict
 end
 
 function couples(txt_url,dict)
@@ -97,13 +131,19 @@ function couples(txt_url,dict)
 			end	
 		end
 	end
-	proba(dict)
-	print("cpt",cpt)
-	for (key, value) in dict
-		dict[key]=dict[key]/cpt
-	end
-	println(filter(tuple -> startswith(first(tuple), "a"), dict))
+	proba!(dict)
 end
 
-
-			
+function lettreSuivante(probaLettre,letter)
+	tirage = rand(Float64)
+	res = filter(tuple -> startswith(first(tuple), ""*letter), probaLettre)
+	before = 0 
+	for (key,value) in res
+		if tirage>=before && tirage<= value
+			return key[2]
+		end
+		before = value
+	end
+	#dans le cas où une lettre n'aurait aucune probabilité, on retourne une lettre aléatoire
+	return dictionnaireInverse[rand((1:26))]
+end
