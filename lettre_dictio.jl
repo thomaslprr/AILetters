@@ -42,7 +42,7 @@ dictionnaire = Dict('a' => 1,
             'z' => 26
             )
 			
-D = Dict{String,Int}()
+D = Dict{String,Float64}()
 
 function estlettreFr(cara)
     cara = lowercase(cara)
@@ -64,19 +64,27 @@ function majcouple!(dict,av,ap)
 	end
 end
 
+
 function proba(dict)
-	P = Dict{String,Float64}()
-	for (key, value) in dictionnaire
-		f
+	som=0
+	res = filter(tuple -> startswith(first(tuple), "a"), dict)
+	for (key, value) in res
+		println(key," ",value)
+		som=som+value
 	end
-	
-	println(filter(tuple -> startswith(first(tuple), "a"), dict))
+	for (key, value) in res
+		dict[key]=value/som
+	end
+	for (key, value) in dict
+		println(key," ",value)
+	end
+			
 	
 	
 end
 
 function couples(txt_url,dict)
-	
+	cpt=0
 	for line in eachline(txt_url)
 		tmp = ' ' ;
 		for char in line
@@ -84,13 +92,17 @@ function couples(txt_url,dict)
 				tmp=char
 			elseif (tmp!=' ')
 				majcouple!(dict,tmp,char);
+				cpt=cpt+1
 				tmp=char;
 			end	
 		end
 	end
 	proba(dict)
-	#println(dict)
-	
+	print("cpt",cpt)
+	for (key, value) in dict
+		dict[key]=dict[key]/cpt
+	end
+	println(filter(tuple -> startswith(first(tuple), "a"), dict))
 end
 
 
