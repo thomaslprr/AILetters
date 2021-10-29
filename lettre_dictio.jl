@@ -73,7 +73,7 @@ dictionnaireInverse = Dict(1 => 'a',
 			
 			
 			
-D = Dict{String,Float64}()
+
 
 function estlettreFr(cara)
     cara = lowercase(cara)
@@ -114,10 +114,9 @@ function proba!(dict)
 				cml = dict[key]
 		end
 	end
-	return dict
 end
 
-function couples(txt_url,dict)
+function couples!(dict, txt_url)
 	cpt=0
 	for line in eachline(txt_url)
 		tmp = ' ' ;
@@ -134,24 +133,8 @@ function couples(txt_url,dict)
 	proba!(dict)
 end
 
-function lettreSuivante(probaLettre,letter)
-	tirage = rand(Float64)
-	res = filter(tuple -> startswith(first(tuple), ""*letter), probaLettre)
-	before = 0 
-	for (key,value) in res
-		if tirage>=before && tirage<= value
-			return key[2]
-		end
-		before = value
-	end
-	#dans le cas où une lettre n'aurait aucune probabilité, on retourne une lettre aléatoire
-	return dictionnaireInverse[rand((1:26))]
-end
-
-
-T = Dict()
 #méthode bonus qui permet de calculer la proba de la taille d'un mot selon un texte passé en paramètre
-function moyenneTailleMot!(txt_url,dictMot)
+function moyenneTailleMot!(dictMot, txt_url)
 	cptTotal = 0
 	for line in eachline(txt_url)
 		mots = split(line," ")
@@ -172,7 +155,20 @@ function moyenneTailleMot!(txt_url,dictMot)
 		dictMot[key] = (dictMot[key]/cptTotal)+cml
 		cml =dictMot[key]  
 	end
-	return dictMot
+end
+
+function lettreSuivante(probaLettre,letter)
+	tirage = rand(Float64)
+	res = filter(tuple -> startswith(first(tuple), ""*letter), probaLettre)
+	before = 0 
+	for (key,value) in res
+		if tirage>=before && tirage<= value
+			return key[2]
+		end
+		before = value
+	end
+	#dans le cas où une lettre n'aurait aucune probabilité, on retourne une lettre aléatoire
+	return dictionnaireInverse[rand((1:26))]
 end
 
 
@@ -206,4 +202,18 @@ function generationPhrase(probaLettre,probaMot)
 	end
 	return uppercase(phrase[2])*phrase[3:end]*"."
 	
+end
+
+#Méthode lit un texte, apprend sur les probas de lettre et de taille de mot
+#Génère un nombre de phrase spécifié en paramètre
+function test!(texteUrl,nbPhrase)
+	D = Dict{String,Float64}()
+	couples!(D, texteUrl)
+	T = Dict()
+	moyenneTailleMot!(T, texteUrl)
+	paragraphe = ""
+	for i in 1:nbPhrase
+		paragraphe = paragraphe * " " * generationPhrase(D, T)	
+	end
+	return paragraphe[2:end]
 end

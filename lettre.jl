@@ -74,7 +74,6 @@ dictionnaireInverse = Dict(1 => 'a',
 			
 
 			
-M = zeros(Float64, 26, 26)
 #méthode prenant en paramètre un caractère et renvoie true s'il s'agit d'un caractère français sinon renvoie false
 function estlettreFr(cara)
     cara = lowercase(cara)
@@ -91,21 +90,23 @@ function indiceLettre(dict,lettre)
 end 
 
 
-#méthode permettant de mettre à jour un dictionnaire
+#méthode incrémentant un couple dans la matrice de probabilités
 function majcouple!(M,av,ap)
 	if(estlettreFr(av) && estlettreFr(ap))
-    	M[indiceLettre(dictionnaire,av), indiceLettre(dictionnaire,ap)] = M[indiceLettre(dictionnaire,av), indiceLettre(dictionnaire,ap)]+1
+		tmp = M[indiceLettre(dictionnaire,av), indiceLettre(dictionnaire,ap)]+1
+    	M[indiceLettre(dictionnaire,av), indiceLettre(dictionnaire,ap)] = tmp
 	end
 end
 
 #méthode pour créer la matrice de proba de succession de lettre à une lettre selon un fichier passé en paramètre
-function couples!(txt_url,matrice)
+function couples!(matrice, txt_url)
 	for line in eachline(txt_url)
 		tmp = ' ' ;
 		for char in line
 			if(tmp==' ')
 				tmp=char
 			elseif (tmp!=' ')
+				
 				majcouple!(matrice,tmp,char);
 				tmp=char;
 			end	
@@ -118,13 +119,11 @@ function couples!(txt_url,matrice)
 			matrice[i,j] = tmp+matrice[i,j]/total
 			tmp = matrice[i,j]
 		end 
-	end	
-	return matrice
+	end
 end
 
-T = zeros(Float64, 30)
 #méthode bonus qui permet de calculer la proba de la taille d'un mot selon un texte passé en paramètre
-function moyenneTailleMot!(txt_url,tableauMot)
+function moyenneTailleMot!(tableauMot, txt_url)
 	cptTotal = 0
 	for line in eachline(txt_url)
 		mots = split(line," ")
@@ -143,11 +142,23 @@ function moyenneTailleMot!(txt_url,tableauMot)
 		tableauMot[i]=cml+(tableauMot[i]/cptTotal)
 		cml = tableauMot[i]
 	end
-	return tableauMot
 end
 
+#Méthode qui annonce la lettre suivante par rapport à une lettre donnée en entrée et des probas
+function lettreSuivante(probaLettre,lettre)
+	tirage = rand(Float64)
+	indice = indiceLettre(dictionnaire,lettre)
+	intervalle=0  
+	for i in 1:26
+		if(tirage >=intervalle && tirage <= probaLettre[indice,i])
+			return dictionnaireInverse[i]
+		end
+		intervalle=probaLettre[indice,i]
+	end
+end	
+
 #Méthode qui génère un mot par rapport à la proba des lettres et la proba des tailles des mots
-function generationMot(probaLettre,probaMot)
+function generationMot(probaLettre, probaMot)
 	lettre = dictionnaireInverse[rand((1:26))]
 	tirage = rand(Float64)
 	tailleMot = -1
@@ -168,37 +179,26 @@ function generationMot(probaLettre,probaMot)
 end
 
 #Méthode qui génère une phrase par rapport à une proba des lettres et une proba des tailles de mot
-function generationPhrase(probaLettre,probaMot)
+function generationPhrase(probaLettre, probaMot)
 	tirage = rand((7:25))
 	phrase = ""
 	for i in 1:tirage 
-		phrase = phrase*" "*generationMot(probaLettre,probaMot)
+		phrase = phrase*" "*generationMot(probaLettre, probaMot)
 	end
 	return uppercase(phrase[2])*phrase[3:end]*"."
 	
 end
 
-#Méthode qui annonce la lettre suivante par rapport à une lettre donnée en entrée et des probas
-function lettreSuivante(probaLettre,lettre)
-	tirage = rand(Float64)
-	indice = indiceLettre(dictionnaire,lettre)
-	intervalle=0  
-	for i in 1:26
-		if(tirage >=intervalle && tirage <= probaLettre[indice,i])
-			return dictionnaireInverse[i]
-		end
-		intervalle=probaLettre[indice,i]
-	end
-end	
-
 #Méthode lit un texte, apprend sur les probas de lettre et de taille de mot
 #Génère un nombre de phrase spécifié en paramètre
-function test!(texteUrl,matriceLettre,matriceMot,nbPhrase)
-	probaLettre = couples(texteUrl,matriceLettre)
-	probaTailleMot = moyenneTailleMot(texteUrl,matriceMot)
+function test!(texteUrl,nbPhrase)
+	M = zeros(Float64, 26, 26)
+	couples!(M, texteUrl)
+	T = zeros(Float64, 30)
+	moyenneTailleMot!(T, texteUrl)
 	paragraphe = ""
 	for i in 1:nbPhrase
-		paragraphe = paragraphe * " "*generationPhrase(probaLettre,probaTailleMot)	
+		paragraphe = paragraphe * " " * generationPhrase(M, T)	
 	end
 	return paragraphe[2:end]
 end
