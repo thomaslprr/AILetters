@@ -201,4 +201,8 @@ function test!(texteUrl,matriceLettre,matriceMot,nbPhrase)
 		paragraphe = paragraphe * " "*generationPhrase(probaLettre,probaTailleMot)	
 	end
 	return paragraphe[2:end]
+<<<<<<< HEAD
 end		
+=======
+end		
+>>>>>>> 545945e972e883ac3c97327baf3d04748b9f5c80
