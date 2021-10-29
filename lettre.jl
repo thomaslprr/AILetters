@@ -194,8 +194,8 @@ end
 #Méthode lit un texte, apprend sur les probas de lettre et de taille de mot
 #Génère un nombre de phrase spécifié en paramètre
 function test!(texteUrl,matriceLettre,matriceMot,nbPhrase)
-	probaLettre = couples(texteUrl,M)
-	probaTailleMot = moyenneTailleMot(texteUrl,T)
+	probaLettre = couples(texteUrl,matriceLettre)
+	probaTailleMot = moyenneTailleMot(texteUrl,matriceMot)
 	paragraphe = ""
 	for i in 1:nbPhrase
 		paragraphe = paragraphe * " "*generationPhrase(probaLettre,probaTailleMot)	
