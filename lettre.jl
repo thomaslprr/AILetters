@@ -195,7 +195,7 @@ end
 #Génère un nombre de phrase spécifié en paramètre
 function test!(texteUrl,matriceLettre,matriceMot,nbPhrase)
 	probaLettre = couples(texteUrl,M)
-	probaTailleMot = moyenneTailleMot("/Users/thomaslapierre/AILetters/cyrano.txt",T)
+	probaTailleMot = moyenneTailleMot(texteUrl,T)
 	paragraphe = ""
 	for i in 1:nbPhrase
 		paragraphe = paragraphe * " "*generationPhrase(probaLettre,probaTailleMot)	
