@@ -147,3 +147,63 @@ function lettreSuivante(probaLettre,letter)
 	#dans le cas où une lettre n'aurait aucune probabilité, on retourne une lettre aléatoire
 	return dictionnaireInverse[rand((1:26))]
 end
+
+
+T = Dict()
+#méthode bonus qui permet de calculer la proba de la taille d'un mot selon un texte passé en paramètre
+function moyenneTailleMot!(txt_url,dictMot)
+	cptTotal = 0
+	for line in eachline(txt_url)
+		mots = split(line," ")
+		for mot in mots
+			if(sizeof(mot)>0)
+				if haskey(dictMot,length(mot))
+					dictMot[length(mot)] = dictMot[length(mot)]+1
+				else
+					dictMot[length(mot)] = 1
+				end
+				cptTotal = cptTotal+1 
+			end		
+		end
+	end
+	
+	cml=0
+	for (key,value) in dictMot
+		dictMot[key] = (dictMot[key]/cptTotal)+cml
+		cml =dictMot[key]  
+	end
+	return dictMot
+end
+
+
+#Méthode qui génère un mot par rapport à la proba des lettres et la proba des tailles des mots
+function generationMot(probaLettre,probaMot)
+	lettre = dictionnaireInverse[rand((1:26))]
+	tirage = rand(Float64)
+	tailleMot=-1
+	before=0 
+	for (key,value) in probaMot
+		if tirage>=before && tirage<= value
+			tailleMot= key
+		end
+		before = value
+	end
+	
+	chaine = ""*lettre
+	for i in 1:tailleMot 
+		lettre = lettreSuivante(probaLettre,lettre)
+		chaine = chaine*lettre
+	end
+	return chaine
+end	
+
+#Méthode qui génère une phrase par rapport à une proba des lettres et une proba des tailles de mot
+function generationPhrase(probaLettre,probaMot)
+	tirage = rand((7:25))
+	phrase = ""
+	for i in 1:tirage 
+		phrase = phrase*" "*generationMot(probaLettre,probaMot)
+	end
+	return uppercase(phrase[2])*phrase[3:end]*"."
+	
+end
