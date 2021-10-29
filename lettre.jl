@@ -129,7 +129,7 @@ function moyenneTailleMot!(txt_url,tableauMot)
 	for line in eachline(txt_url)
 		mots = split(line," ")
 		for mot in mots
-			if(sizeof(mot)>0)
+			if(length(mot)>0)
 				if haskey(dictionnaire,lowercase(mot[1])) 
 					tableauMot[length(mot)] = tableauMot[length(mot)]+1
 					cptTotal = cptTotal+1 
@@ -201,8 +201,4 @@ function test!(texteUrl,matriceLettre,matriceMot,nbPhrase)
 		paragraphe = paragraphe * " "*generationPhrase(probaLettre,probaTailleMot)	
 	end
 	return paragraphe[2:end]
-<<<<<<< HEAD
-end		
-=======
-end		
->>>>>>> 545945e972e883ac3c97327baf3d04748b9f5c80
+end
