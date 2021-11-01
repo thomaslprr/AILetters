@@ -1,79 +1,18 @@
-dictionnaire = Dict('a' => 1,
-            'à' => 1,
-            'â' => 1,
-            'b' => 2,
-            'c' => 3,
-            'ç' => 3,
-            'd' => 4,
-            'e' => 5,
-            'é' => 5,
-            'è' => 5,
-            'ê' => 5,
-            'ë' => 5,
-            'æ' => 5,
-            'œ' => 5,
-            'f' => 6,
-            'g' => 7,
-            'h' => 8,
-            'i' => 9,
-            'î' => 9,
-            'ï' => 9,
-            'j' => 10,
-            'k' => 11,
-            'l' => 12,
-            'm' => 13,
-            'n' => 14,
-            'o' => 15,
-            'ô' => 15,
-            'p' => 16,
-            'q' => 17,
-            'r' => 18,
-            's' => 19,
-            't' => 20,
-            'u' => 21,
-			'ü' => 21,
-            'ù' => 21,
-            'û' => 21,
-            'v' => 22,
-            'w' => 23,
-            'x' => 24,
-            'y' => 25,
-            'ÿ' => 25,
-            'z' => 26
-            )
-			
-#Défintiion d'un dicitionnaire inversé : chiffre vers lettre			
-dictionnaireInverse = Dict(1 => 'a',
-			2 => 'b',
-			3 => 'c',
-			4 => 'd',
-			5 => 'e',
-			6 => 'f',
-			7 => 'g',
-			8 => 'h',
-			9 => 'i',
-			10 => 'j',
-			11 => 'k',
-			12 => 'l',
-			13 => 'm',
-			14 => 'n',
-			15 => 'o',
-			16 => 'p',
-			17 => 'q',
-			18 => 'r',
-			19 => 's',
-			20 => 't',
-			21 => 'u',
-			22 => 'v',
-			23 => 'w',
-			24 => 'x',
-			25 => 'y',
-			26 => 'z',
-			)
-			
-			
-			
+#Définition d'un dictionnaire : lettre vers chiffre
+dictionnaire = Dict('a' => 1, 'à' => 1, 'â' => 1, 'b' => 2, 'c' => 3, 'ç' => 3,
+            'd' => 4, 'e' => 5, 'é' => 5, 'è' => 5, 'ê' => 5, 'ë' => 5, 'æ' => 5,
+			'œ' => 5, 'f' => 6, 'g' => 7, 'h' => 8, 'i' => 9, 'î' => 9, 'ï' => 9,
+            'j' => 10, 'k' => 11, 'l' => 12, 'm' => 13, 'n' => 14, 'o' => 15,
+			'ô' => 15, 'p' => 16, 'q' => 17, 'r' => 18, 's' => 19, 't' => 20,
+            'u' => 21, 'ü' => 21, 'ù' => 21, 'û' => 21, 'v' => 22, 'w' => 23,
+            'x' => 24, 'y' => 25, 'ÿ' => 25, 'z' => 26 )
 
+#Défintiion d'un dicitionnaire inversé : chiffre vers lettre			
+dictionnaireInverse = Dict(1 => 'a', 2 => 'b', 3 => 'c', 4 => 'd', 5 => 'e',
+			6 => 'f', 7 => 'g', 8 => 'h', 9 => 'i', 10 => 'j', 11 => 'k',
+			12 => 'l', 13 => 'm', 14 => 'n', 15 => 'o', 16 => 'p', 17 => 'q',
+			18 => 'r', 19 => 's', 20 => 't', 21 => 'u', 22 => 'v', 23 => 'w',
+			24 => 'x', 25 => 'y',26 => 'z' )
 
 function estlettreFr(cara)
     cara = lowercase(cara)
@@ -206,7 +145,7 @@ end
 
 #Méthode lit un texte, apprend sur les probas de lettre et de taille de mot
 #Génère un nombre de phrase spécifié en paramètre
-function test!(texteUrl,nbPhrase)
+function generationTexte(texteUrl,nbPhrase)
 	D = Dict{String,Float64}()
 	couples!(D, texteUrl)
 	T = Dict()
